@@ -55,14 +55,23 @@ int isVar(char c) {
 	return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z');
 }
 
+typedef struct tokenizer {
+	char *start;
+	int   pos;
+} tokenizer;
 
-void tokenize(char* input, int* pos, token* t) {
+int tokenize(tokenizer *tzer, token* t) {
 	//Pahila jun jun sajilo xa tyo tyo suru ma garihalum kina vane tyo garna sajilo hunxa
 	//hamile position pos vanne variable pani linxau kinavane tesle hami string ma ka xau vanne kura dekhauxa but as for now we are going to take the position variable only as a simple variable 
 	//a+b this is a  4545454567876496753 ? 56/34
 
+	char* input = tzer->start + tzer->pos;
+
+	if (input[0] == 0)
+		return 0;
+
 	while (input[0] == ' ') {
-		*pos = *pos + 1;
+		tzer->pos = tzer->pos + 1;
 		input++;
 	}
 
@@ -71,64 +80,64 @@ void tokenize(char* input, int* pos, token* t) {
 		t->token_type = tokentype_Add;
 		t->text[0] = '+';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == '-') {
 		t->token_type = tokentype_Sub;
 		t->text[0] = '-';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == '*') {
 		t->token_type = tokentype_Mul;
 		t->text[0] = '*';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == '/') {
 		t->token_type = tokentype_Div;
 		t->text[0] = '/';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == '=') {
 		t->token_type = tokentype_Equal;
 		t->text[0] = '=';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == '(') {
 		t->token_type = tokentype_LBar;
 		t->text[0] = '(';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (input[0] == ')') {
 		t->token_type = tokentype_RBar;
 		t->text[0] = ')';
 		t->text[1] = 0;
-		*pos = *pos + 1;
-		return;
+		tzer->pos = tzer->pos + 1;
+		return 1;
 	}
 	else if (isNum(input[0])) {
 		int start = 1;
-		*pos = *pos + 1;
+		tzer->pos = tzer->pos + 1;
 		while (isNum(input[start])) {
-			*pos = *pos + 1;
+			tzer->pos = tzer->pos + 1;
 			start++;
 
 		}
 
-		//*pos = *pos - 1;
+		//tzer->pos = tzer->pos - 1;
 		int length = start;
-		/*if (input[*pos] != ' ') {
-			*pos = *pos - 1;
+		/*if (input[tzer->pos] != ' ') {
+			tzer->pos = tzer->pos - 1;
 		}*/
 		for (int i = 0; i < length; i++) {
 			t->text[i] = input[i];
@@ -140,16 +149,16 @@ void tokenize(char* input, int* pos, token* t) {
 	}
 	else if (isVar(input[0])) {
 		int start = 1;
-		*pos = *pos + 1;
+		tzer->pos = tzer->pos + 1;
 		while (isVar(input[start])) {
-			*pos = *pos + 1;
+			tzer->pos = tzer->pos + 1;
 			start++;
 		}
 
 
 		int length = start;
-		/*if (input[*pos] != ' ') {
-			*pos = *pos - 1;
+		/*if (input[tzer->pos] != ' ') {
+			tzer->pos = tzer->pos - 1;
 
 		}*/
 		for (int i = 0; i < length; i++) {
@@ -159,19 +168,15 @@ void tokenize(char* input, int* pos, token* t) {
 
 		t->text[length] = 0;
 		t->token_type = tokentype_Var;
-		return;
+		return 1;
 	}
 	else {
-		int i;
-
-		for (i = 0; input[i] != ' '; i++) {
-			t->text[i] = input[i];
-			*pos = *pos + 1;
-		}
-		//*pos = *pos - 1;
-		t->text[i] = 0;
+		//tzer->pos = tzer->pos - 1;
+		t->text[0] = input[0];
+		t->text[1] = 0;
+		tzer->pos = tzer->pos + 1;
 		t->token_type = tokentype_Error;
-		return;
+		return 1;
 	}
 }
 //Lets create a linked structure of the tokens 
