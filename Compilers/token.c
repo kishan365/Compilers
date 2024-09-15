@@ -119,10 +119,14 @@ int evaluateExpression(int left, binaryOperator op, int right) {
 	}
 	return 0;
 }
-//lets dont change any logic and now just sort the input such that the multiply and divide will
-//will be in the leftmost side
+
+void subexpression() {
+
+
+}
+
 int main() {
-	char input[] = "4/2*2*2";
+	char input[] = "4*2-4/2/2-4";
 	tokenizer tzer;
 	token t;
 	int left = 0;
@@ -135,56 +139,6 @@ int main() {
 	int sign = 1;
 	int subexp = 0;
 
-	if (parsePrimaryExpression(&tzer, &left)) {
-		while (1) {
-			binaryOperator op;
-			if (!parseBinaryOperator(&tzer, &op)) {
-				break;
-			}
-			if (op == binaryOperator_Sub) {
-				subexp++;
-				sign = -1;
-			}
-			else if(op == binaryOperator_Add) {
-				subexp++;
-				sign = 1;
-			}
-			if (op == binaryOperator_Mul || op == binaryOperator_Div) {
-				//what the  fuck should I right here 
-				// when there is multiply or divide in the input then the code comes here
-				//and i just wanted to caculate that statement and put in the right and after 
-				// and then the operator will be parsed again so I will put the value of the 
-				//the right in the left and then command will flow as usual.
-				tzer.pos = tzer.pos - 2;
-				if (!parseOperand(&tzer, &right)) {
-					break;
-				}
-				if (subexp) {
-					left = left - sign * right;
-				}
-				else {
-					left = 0;
-				}
-				hold = right;
-				tzer.pos++;
-				if (!parseOperand(&tzer, &right)) {
-					break;
-				}
-				hold = sign * evaluateExpression(hold, op, right);
-				left = left + hold;
-				continue;
-			}
-			if (!parseOperand(&tzer, &right)) {
-				printf("expected primary expression\n");
-				exit(1);
-			}
-
-			left = evaluateExpression(left, op, right);
-		}
-	} else {
-		printf("empty input\n");
-	}
-
-	printf("result: %d\n", left);
+	
 }
 
